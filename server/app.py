@@ -49,3 +49,47 @@ def create_user():
     db.session.add(new_user)
     db.session.commit()
     return jsonify(new_user.to_dict()), 201
+
+@app.route('/users/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    data = request.json
+    user = User.query.get_or_404(user_id)
+
+    if 'username' in data:
+        user.username = data['username']
+    if 'email' in data:
+        user.email = data['email']
+    if 'password' in data:
+        user.password = generate_password_hash(data['password'], method='sha256')
+    if 'first_name' in data:
+        user.first_name = data['first_name']
+    if 'last_name' in data:
+        user.last_name = data['last_name']
+    if 'date_of_birth' in data:
+        user.date_of_birth = data['date_of_birth']
+    if 'profile_picture' in data:
+        user.profile_picture = data['profile_picture']
+
+    db.session.commit()
+    return jsonify(user.to_dict())
+
+@app.route('/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
+    return '', 204
+
+# Convert model instances to dictionaries for JSON serialization
+def to_dict(self):
+    return {c.name: getattr(self, c.name) for c in self._table_.columns}
+
+User.to_dict = to_dict
+Employment.to_dict = to_dict
+Category.to_dict = to_dict
+Application.to_dict = to_dict
+SocialIntegration.to_dict = to_dict
+
+# Run the app
+if _name_ == '_main_':
+    app.run(debug=True)
