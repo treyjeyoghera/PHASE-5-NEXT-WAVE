@@ -1,8 +1,9 @@
+# app.py
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from models import db, User, Employment, Category, Application, SocialIntegration
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -12,11 +13,18 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///poverty_line.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the database and migration objects
-db = SQLAlchemy(app)
+db.init_app(app)
 migrate = Migrate(app, db)
 
-# Models (Assuming the models you've provided are in a separate file named models.py)
-from models import User, Employment, Category, Application, SocialIntegration
+# Convert model instances to dictionaries for JSON serialization
+def to_dict(self):
+    return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+User.to_dict = to_dict
+Employment.to_dict = to_dict
+Category.to_dict = to_dict
+Application.to_dict = to_dict
+SocialIntegration.to_dict = to_dict
 
 # Routes
 @app.route('/')
@@ -80,16 +88,6 @@ def delete_user(user_id):
     db.session.commit()
     return '', 204
 
-# Convert model instances to dictionaries for JSON serialization
-def to_dict(self):
-    return {c.name: getattr(self, c.name) for c in self._table_.columns}
-
-User.to_dict = to_dict
-Employment.to_dict = to_dict
-Category.to_dict = to_dict
-Application.to_dict = to_dict
-SocialIntegration.to_dict = to_dict
-
 # Run the app
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(debug=True)

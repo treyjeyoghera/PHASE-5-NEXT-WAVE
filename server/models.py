@@ -1,3 +1,4 @@
+# models.py
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
@@ -39,8 +40,9 @@ class Employment(db.Model):
     # Relationships
     category = db.relationship('Category', backref='employments', lazy=True)
 
+
 class Category(db.Model):
-    _tablename_ = 'category'
+    __tablename__ = 'category'
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -52,7 +54,7 @@ class Category(db.Model):
 
 
 class Application(db.Model):
-    _tablename_ = 'application'
+    __tablename__ = 'application'
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -66,7 +68,7 @@ class Application(db.Model):
 
 
 class SocialIntegration(db.Model):
-    _tablename_ = 'socialintegration'
+    __tablename__ = 'socialintegration'
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -74,4 +76,3 @@ class SocialIntegration(db.Model):
 
     # Relationships
     category = db.relationship('Category', backref='social_integrations', lazy=True)
-
