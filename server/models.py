@@ -39,4 +39,39 @@ class Employment(db.Model):
     # Relationships
     category = db.relationship('Category', backref='employments', lazy=True)
 
+class Category(db.Model):
+    _tablename_ = 'category'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    description = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    # Relationships
+    social_integrations = db.relationship('SocialIntegration', backref='category', lazy=True)
+
+
+class Application(db.Model):
+    _tablename_ = 'application'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    employment_id = db.Column(db.Integer, db.ForeignKey('employment.id'), nullable=False)
+    status = db.Column(db.Integer, nullable=False)  # You can define constants for status
+    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationships
+    employment = db.relationship('Employment', backref='applications', lazy=True)
+
+
+class SocialIntegration(db.Model):
+    _tablename_ = 'socialintegration'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+
+    # Relationships
+    category = db.relationship('Category', backref='social_integrations', lazy=True)
 
